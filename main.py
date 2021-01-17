@@ -1,15 +1,35 @@
-from cv2 import cv2
+from pca_functions import load_dataset, model
+
+directory="ORL2"
+
+def print_datasets(train_data, test_data):
+    print("############### dataset de treino ##############")
+    for p in train_data:
+        print(p.id, " - ", p.label)
+    print("############### dataset de teste ##############")
+    for p in test_data:
+        print(p.id, " - ", p.label)
 
 
-import os
 
-def load_images_from_folder(folder):
-    images = []
-    for filename in os.listdir(folder):
-        img = cv2.imread(os.path.join(folder,filename))
-        if img is not None:
-            gray_image = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-            images.append(gray_image)
-    return images
+def execute():
+    train_data, test_data = load_dataset(directory)
+    print_datasets(train_data, test_data)
 
-folder="images"
+    component_numbers = list()
+    accuracies = list()
+
+    for pca in range(1, 21):
+        prediction, accuracy = model(pca, train_data, test_data)
+        component_numbers.append(prediction)
+        accuracies.append(accuracy)
+
+
+    for i in range(len(component_numbers)):
+        if (i >= 9):
+            print('{} componentes principais, acurácia: {}%.'.format(component_numbers[i], accuracies[i]))
+
+
+
+if __name__ == '__main__':
+    execute()
